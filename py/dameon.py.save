@@ -1,0 +1,50 @@
+from DBManager import DBManager
+from connection import Connection
+from image import Image
+from flavor import Flavor
+from network import Network
+from node import Node
+import mysql.connector
+
+
+def main():
+	
+	dbManager = DBManager("127.0.0.1","root","t00r","cdn_db")
+	dbManager.connect()
+	
+	row = dbManager.getRegionInfo("AALTO")
+	if row == False:
+		return
+	
+	auth_username = row[3]
+	auth_password = row[4]
+	project_name = row[5]
+	region_name = row[6]
+	#print auth_username, auth_password, project_name, region_name
+	conntion = Connection(auth_url, auth_username, auth_password, project_name, region_name)
+	conn = conntion.connect()
+	flavor = Flavor(conn)
+	image = Image(conn)
+	node = Node(conn)
+	network = Network(conn)
+	net = network.getNetFromName("demo-net")
+	idMachines = dbManager.startService()
+
+	for idVM in idMachines:
+		(node_name, image_name, flavor_name) = dbManager.getInfoImage(idVM)
+		print (node_name, image_name, flavor_name)			
+		node = node.createNode(self, node_name, image_name, flavor_name, net, image, flavor)
+		dbManager.updateImageID(self, idOld, idNew)
+	
+	return
+	#dbManager.insertUser("Miloud", "Bagaa", "bagmoul", "CORSO")
+
+	print "___________________"
+	print idMachines
+	print "___________________"
+	idMachines = dbManager.destroyCDNs()
+	print "_________00000__________"
+	print idMachines
+	print "_________00000__________"
+	dbManager.de
+main()

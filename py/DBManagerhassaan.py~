@@ -1,0 +1,419 @@
+import mysql.connector
+import uuid
+import time
+import datetime
+
+
+
+class DBManager:
+	def __init__(self, host, user, password, dataBase):
+
+		self.host = host
+		self.password = password
+		self.user = user
+		self.dataBase = dataBase		
+
+	def connect(self):
+
+		self.cnx = mysql.connector.connect(user=self.user, password=self.password, host=self.host, database=self.dataBase)
+		return self.cnx
+		#cnx.close()
+
+
+	def deconnect(self):
+		self.cnx.close()
+
+	def insertUser(self, firsName, lastName, user, password, secretquestion, secretanswer):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT * FROM user WHERE login = '%s'"%(user)
+		cursor.execute(get_user)
+		if len(cursor.fetchall()) > 0:
+			return False		
+		add_user = "INSERT INTO user (firstnameuser,lastnameuser,login,pwd,secretquestion,secretanswer) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" %(firsName, lastName, user, password, secretquestion, secretanswer)
+		cursor.execute(add_user)
+		return True
+
+
+	def insertLocation(self, location, longitude, latitude):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT * FROM servicearea WHERE cdnlocation = '%s'"%(location)
+		cursor.execute(get_user)
+		if len(cursor.fetchall()) > 0:
+			return False		
+		add_user = "INSERT INTO servicearea (cdnlocation,longitude,latitude) VALUES ('%s', '%s', '%s')" %(location,longitude,latitude)
+		cursor.execute(add_user)
+		return True
+
+
+
+	def authUser(self, user, password):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT * FROM user WHERE login = '%s' and pwd = '%s'"%(user, password)
+		S = cursor.execute(get_user)
+		rows = []
+		try:
+			if len(cursor.fetchall()) > 0:
+				return True
+			else:
+				return False
+		except:
+			return False
+
+	def authUser_admin(self, user, password):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT * FROM user WHERE login = '%s' and pwd = '%s'"%(user, password)
+		S = cursor.execute(get_user)
+		rows = []
+		try:
+			if len(cursor.fetchall()) > 0:
+				return True
+			else:
+				return False
+		except:
+			return False
+
+
+
+	def removeCDN(self, idCDN):
+		cursor = self.cnx.cursor()
+		rm_cdn = "UPDATE cdn set destroy = 1 WHERE idcdn=%s"%(idCDN)
+		cursor.execute(rm_cdn)
+		req = "SELECT * FROM cdnmachine WHERE idcdn = '%s'"%(idCDN)
+		S = cursor.execute(req)
+		rows = []
+		try:
+			rows = cursor.fetchall()
+			for row in rows:
+				rm_VM = "UPDATE machine set destroy = 1 WHERE  idmachine='%s'"%(row[1])
+				cursor.execute(rm_VM)
+		except:
+			return False
+
+			
+		return True
+
+
+	def getRegionInfo(self, nameRegion):
+		req = get_user = "SELECT * FROM servicearea WHERE regionservice = '%s'"%(nameRegion)
+		cursor = self.cnx.cursor()
+	 	cursor.execute(req)
+		rows = []
+		try:
+			rows = cursor.fetchall()
+			if len(rows) > 0:
+				return rows[0]
+		except:
+			return False	
+
+
+
+	def forgotpassword(self, user):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT secretquestion FROM user WHERE login = '%s'"%(user)
+		S = cursor.execute(get_user)
+		rows=0
+		rows = []
+		secretquestion = []
+		try:
+			rows = cursor.fetchall()
+			if len(rows) > 0:
+				return (rows)
+			else:
+				return False
+		except:
+			return False	
+
+
+
+	def verifyanswer(self, user, pwd):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT pwd FROM user WHERE login = '%s' and secretanswer = '%s'"%(user,pwd)
+		S = cursor.execute(get_user)
+		rows=0
+		rows = []
+		try:
+			rows = cursor.fetchall()
+			if len(rows) > 0:
+				return (rows)
+			else:
+				return False
+		except:
+			return False	
+
+	def clear_database(self):
+		cursor = self.cnx.cursor()
+		get_user = "delete from user"
+		S = cursor.execute(get_user)
+		return True	
+
+
+
+
+	def getCdn(self, user, password):
+		cursor = self.cnx.cursor()
+		get_user = "SELECT * FROM user WHERE login = '%s' and pwd = '%s'"%(user, password)
+		S = cursor.execute(get_user)
+		rows = []
+		idcdn = []
+		namecdn = []
+		try:
+			rows = cursor.fetchall()
+			if len(rows) > 0:
+				iduser = rows[0][0];
+				get_cdn = "SELECT idcdn, namecdn FROM cdn WHERE iduser = %d and destroy = 0"%(iduser)
+				S = cursor.execute(get_cdn)
+				try:
+					rows = cursor.fetchall()
+					for row in rows:
+						idcdn.append(row[0])
+						namecdn.append(row[1]) 
+					return (True, idcdn, namecdn)
+				except:
+					return (False, idcdn, namecdn)
+
+			else:
+				return (False, [], [])
+			
+		except:
+			return (False, [], [])
+	
+	def getRegions(self):
+		cursor = self.cnx.cursor()
+		get_services = "SELECT * FROM servicearea"
+		S = cursor.execute(get_services)
+		rows = []
+		cdnlocations = []
+		longitudes = []
+		latitudes = []
+		try:
+			rows = cursor.fetchall()
+			for row in rows:
+				cdnlocations.append(row[1])
+				longitudes.append(row[2]) 
+				latitudes.append(row[3])
+			return (True, cdnlocations, longitudes, latitudes)			
+		except:
+			return (False, ["BBB"], ["CCC"])
+
+
+	def addCDN(self, login, namecdn, qoe, timestart, timeend, validatetime):
+		
+		cursor = self.cnx.cursor()
+		get_userID = "SELECT * FROM user WHERE login = %s"%(login)
+		S = cursor.execute(get_userID)
+		rows = []
+		try:
+			rows = cursor.fetchall()
+			if len(rows) > 0:
+				iduser = rows[0][0]				
+			else:
+				return (False, 0)			
+		except:
+			return (False, 0)
+
+
+		#timestartdate='04'#timestart[2:3]
+		#timestartmonth='07'#timestart[5:6]
+		#timestartyear='2015'#timestart[8:11]
+		#timestart= timestartyear + '-' + timestartmonth + '-' + timestartdate
+
+		#timeenddate='01'#timeend[1:2]
+		#timeendmonth='03'#timeend[4:5]
+		#timeendyear='2019'#timeend[7:10]
+		#timeend= timeendyear + '-' + timeendmonth + '-' + timeenddate
+		aa1='2019'
+		aa2='01'
+		aa3='03'
+		aaa= "DATE_FORMAT(NOW(), '%c/%d/%Y')"
+
+		#aaa={aaa}
+		aaa='2019-05-02 00:00:00'
+		bbb='2019-01-02 00:00:00'
+
+		add_cdn = "INSERT INTO cdn (iduser,namecdn,qoe,timestart,timeend,validatetime, started,destroy) VALUES (%d, %s, %s, %s, %s, %s, %d, %d)"%("",iduser, namecdn, qoe, aaa, bbb, 5, 0, 0)
+		cursor.execute(add_cdn)
+		get_cdnID = "SELECT * FROM cdn WHERE namecdn = %s"%(namecdn)
+		S = cursor.execute(get_cdnID)
+		rows = []
+		try:
+			rows = cursor.fetchall()
+			if len(rows) > 0:
+				idCDN = rows[0][0]	
+				return (True, idCDN)			
+			else:
+				return (False, 0)			
+		except:
+			return (False, 0)
+
+
+
+
+	def addMachines(self, idcdn, vnfs, flavors, types):
+
+		i = 0
+		idservice = 7 # This is the id of AALTO, we should change it later when we disucss...
+		machineList = []
+		cursor = self.cnx.cursor()
+		while i < len(flavors):
+			idMachine = str(uuid.uuid4())
+			machineList.append(idMachine)
+			nameMachine = vnfs[i]
+			flavor_ = flavors[i]
+			type_ = types[i]		
+			add_Machine = "INSERT INTO machine VALUES ('%s', '%s', '%s', '%s', %d, 0)"%(idMachine, nameMachine, type_, flavor_, idservice)
+			cursor.execute(add_Machine)
+			i = i + 1
+		return (True, machineList)
+
+
+	def assignMachinesCDN(self, idCDN, machineList):
+
+		cursor = self.cnx.cursor()
+		for idMachine in  machineList:
+			req = "INSERT INTO cdnmachine VALUES ('%s', '%s')"%(idCDN, idMachine)
+			cursor.execute(req)
+		return True		
+
+
+	def getMachineCDN(self, idcdn):
+		cursor = self.cnx.cursor()
+		get_cdnmachine = "SELECT * FROM cdnmachine  WHERE idcdn= %d "%(idcdn)
+		S = cursor.execute(get_cdnmachine)
+		rows = []
+		myidmachinetostart=[]
+		try:
+			rows = cursor.fetchall()
+			for row in rows:
+				myidmachinetostart.append(row[1])
+			return myidmachinetostart
+		except:
+			return False 
+                        
+
+                
+	def startService(self):
+		mytime = time.strftime('%Y-%m-%d %H:%M:%S')
+		mytime = datetime.datetime.strptime(mytime,'%Y-%m-%d %H:%M:%S')
+		cursor = self.cnx.cursor()
+		get_cdn = "SELECT * FROM cdn WHERE started = 0"
+		S = cursor.execute(get_cdn)
+		rows = []	
+		idmachinetoputstart=[]
+		try:
+			rows = cursor.fetchall()
+			for row in rows:
+				if (mytime >= row[4]) or row[6] == 1:
+					cursor1 = self.cnx.cursor()
+					update_cdn = "update cdn set started=1 where idcdn=%d "%(row[0])
+					S1 = cursor.execute(update_cdn)
+					for  m in self.getMachineCDN(row[0]):
+						idmachinetoputstart.append(m);
+                                                                                                           
+			return idmachinetoputstart                                     
+
+		except:
+			return False
+
+
+	 ##############			
+
+
+
+        def destroyRemovedCDNs(self):
+		cursor = self.cnx.cursor()
+		
+		req = "SELECT * FROM cdn WHERE destroy = 1"
+		S = cursor.execute(req)
+		rows = []
+		destroyedMachine = set()	               
+		try:
+			rows = cursor.fetchall()
+			for row in rows:
+				idremove = row[0]
+				print "CDN should be removed %d"%(idremove)
+				req = "DELETE FROM cdn WHERE idcdn = %d"%(idremove)
+				cursor.execute(req)				  
+				req ="select * from cdnmachine where idcdn = %d "%(idremove)
+				S1 = cursor.execute(req)
+				rows1 = cursor.fetchall()
+				for row1 in rows1:
+					print "______________"
+					destroyedMachine.add(row1[1])
+					print destroyedMachine
+					req="delete from machine where idmachine = '%s' "%(row1[1])
+					S1 = cursor.execute(req)	
+					req="delete from cdnmachine where idmachine = '%s' "%(row1[1])
+					S1 = cursor.execute(req)
+				
+			return destroyedMachine
+
+		except:
+			return set()
+
+                
+        def destroyOverdatedCDNs(self):
+
+		mytime=time.strftime('%Y-%m-%d %H:%M:%S')
+		mytime = datetime.datetime.strptime(mytime,'%Y-%m-%d %H:%M:%S')
+		cursor = self.cnx.cursor()
+		get_cdn = "SELECT * FROM cdn WHERE started = 1 and validatetime = 0"
+		S = cursor.execute(get_cdn)
+		rows = []	
+		destroyedMachine = set()
+	       
+		try:
+			rows = cursor.fetchall()
+			for row in rows:
+				if mytime >= row[5]:
+					cursor1 = self.cnx.cursor()
+
+					machineToDestroy = set(self.getMachineCDN(row[0]))
+
+					delete_cdn="delete from cdn where idcdn = %d "%(row[0])
+					S1 = cursor.execute(delete_cdn)
+
+					delete_cdn="delete from cdnmachine where idcdn = %d "%(row[0])
+					S1 = cursor.execute(delete_cdn)
+
+					destroyedMachine = destroyedMachine | machineToDestroy
+					for mId in machineToDestroy:
+						delete_cdn="delete from machine where idmachine = '%s' "%(mId)
+						S1 = cursor.execute(delete_cdn)
+
+	
+			return destroyedMachine                                    
+		except:
+			return set()
+
+
+        def destroyCDNs(self): 
+		return self.destroyRemovedCDNs() | self.destroyOverdatedCDNs()  
+
+
+
+	def getInfoImage(self, imageId):
+		cursor = self.cnx.cursor()
+		get_cdn = "SELECT * FROM machine WHERE idmachine = '%s'"%(imageId)
+		S = cursor.execute(get_cdn)
+		rows = []	
+		try:
+			rows = cursor.fetchall()
+			row = rows[0]
+			return (row[1], row[2], row[3])
+
+		except:
+			return False
+
+		             
+
+
+
+	def updateImageID(self, idOld, idNew):
+		cursor = self.cnx.cursor()
+		req = "UPDATE machine set idmachine = '%s' where idmachine = '%s'"%(idNew, idOld)
+		S = cursor.execute(req)			
+
+		cursor = self.cnx.cursor()
+		req = "UPDATE cdnmachine set idmachine = '%s' where idmachine = '%s'"%(idNew, idOld)
+		S = cursor.execute(req)			
+

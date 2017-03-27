@@ -1,0 +1,21 @@
+import mysql.connector
+
+
+def addUser(req):
+	info =req.form
+	firstName = info['firstName']
+	lastName = info['lastName']
+	user = info['user']
+	password = info['password']
+	secretquestion = info['secretquestion']
+	secretanswer = info['secretanswer']
+	result = {}
+	dbManager.connect()
+	result['success'] =  dbManager.insertUser(firstName, lastName, user, password, secretquestion, secretanswer)
+	dbManager.deconnect()
+	return json.dumps(result,indent=1)
+
+
+
+
+

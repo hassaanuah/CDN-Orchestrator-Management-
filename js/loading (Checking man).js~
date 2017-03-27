@@ -1,0 +1,1018 @@
+cdn =function(){//start classe
+
+var idCDN = [];
+var nameCDN = [];
+//var login = "";
+//var passwd = "";
+var idRegions = "";
+var nameRegions = "";
+var myFlavors = {};
+var myTypes = {};
+var myRegions = {};
+var markings = {};
+var longitudes= {};
+var latitudes= {};
+var marker= {};
+var selected_list=[];
+var myregion="";
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+this.pusheregion=function() {//start function  pushe-region
+   
+   var pushe="";
+   
+pushe+='<tr > <td ><label>Regions:</label></td><td ><label>Number of subscriber:</label> </td><td ><label> Number of video:</label> </td></tr>';
+
+     	
+ if($('#check input:checked').is(':checked')==true)
+ {
+
+	
+	  pushe+= ' <tr > <td ><label>'+$('#check input:checked').val()+'</label></td><td ><a href="#" class="link"><label>Modify</label></a></label> </td><td ><label> <a  href="#" class="link"  ><label>Delete</label> </a> </label> </td></tr>';
+      $("#tab-region").append(pushe);    
+			
+						
+
+ }
+ //remove region
+	
+	 if($(this).is(':checked')==0)
+ {
+            $('#some_textarea').html($(this).val());
+
+ }
+}//end function pushe-region
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+this.auth_user = function() 
+{
+login = $('#user').val();
+passwd = $('#inputPassword').val();
+$.ajax({
+        url: "/py/form.py/authUser",
+	data: {user:$('#user').val(), password:$('#inputPassword').val()},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+				     if(response.success == false) {}
+				     else {	
+						sessionStorage.setItem('login', $('#user').val());
+						sessionStorage.setItem('passwd', $('#inputPassword').val());
+						window.location='/htm/listcdn.htm';
+					  }	 
+ 	                           }						
+});//end ajax 					
+
+}
+
+
+
+
+
+
+
+
+/*this.add_user1 = function() 
+{
+ $.ajax({
+        url: "../py/form.py/addUser",
+	data: {firsName:$('#firstname').val(), lastName:$('#lastname').val(), user:$('#user').val(), password:$('#password').val(), secretquestion:$('#secretquestion').val(), secretanswer:$('#secretanswer').val()},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+ 				     if(response.success == false) {alert("Please choose another logging!");}
+				     else {alert("The user is successfully created"); window.location='../login.htm';}				
+ 	                           }
+						
+});//end ajax 					
+
+
+}
+*/
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+this.add_user = function() 
+{
+ $.ajax({
+        url: "../py/form.py/addUser",
+	data: {firsName:$('#firstname').val(), lastName:$('#lastname').val(), user:$('#user').val(), password:$('#password').val(), secretquestion:$('#secretquestion').val(), secretanswer:$('#secretanswer').val()},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+	
+	
+	
+        success: function(response){
+ 				     if(response.success == false) {alert("Please choose another logging!");}
+				     else {alert("The user is successfully created"); window.location='../login.htm';}				
+ 	                           }
+						
+});//end ajax 					
+
+
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+this.auth_user = function() 
+{
+login = $('#user').val();
+passwd = $('#inputPassword').val();
+$.ajax({
+        url: "/py/form.py/authUser",
+	data: {user:$('#user').val(), password:$('#inputPassword').val()},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+				     if(response.success == false) {window.location='/htm/forgetpasswordfailed.htm'}
+				     else {	
+						sessionStorage.setItem('login', $('#user').val());
+						sessionStorage.setItem('passwd', $('#inputPassword').val());
+						window.location='/htm/listcdn.htm';
+					  }	
+ 				     
+ 	                           }
+						
+});//end ajax 					
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.deleteCDN = function(idCDN) {
+$.ajax({
+        url: "../py/form.py/deleteCDN",
+	data: {cdnID:idCDN},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){ if (response.success==true) {cdn.loadCDNs();}
+ 	                           }
+						
+});//end ajax 					
+
+//cdn.loadCDNs();
+
+} 
+//"this.deleteCDN('+idCDN[i]+');"
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.loadNewCDN = function()
+{
+
+$.ajax({
+        url: "../py/form.py/getRegions",
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+				     if(response.success == false) {window.location='../login.htm';}
+				     else {
+					   idRegions = response.idRegions;
+					   nameRegions = response.nameRegions;
+					    var i = 0;
+  					    var create='';
+					    create +='<select id="regions" multiple class="btn-group" with="200px">';
+					    while(i<idRegions.length) {
+					   				  create +='<option value="'+nameRegions[i]+'" with="200px">'+nameRegions[i]+'</option>';
+					  				  i += 1;
+								       }
+					    create +='</select>';
+ 					    $("#listeRegion").empty();	
+					    $("#listeRegion").append(create);	
+					    //alert(response.idcdn);
+					
+				       }	
+ 				     
+ 	                           }
+						
+});//end ajax 					
+
+
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+this.loadCDNs = function()
+{
+//var listvalues = sessionStorage.getItem('auth');
+//var auth = JSON.parse(listvalues);
+var login = sessionStorage.login;//auth["login"];
+var passwd = sessionStorage.passwd;//auth["password"];
+$.ajax({
+        url: "../py/form.py/getCDN",
+	data: {user:login, password:passwd},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+				     if(response.success == false) {alert("Logging and password are incorrect!");window.location='../login.htm';}
+				     else {
+					   idCDN = response.idcdn;
+					   nameCDN = response.namecdn;
+					    var i = 0;
+  					    var create='';
+					    create +='<table  class="table table-striped">'
+					    create +='<tr > <td ><label>CDN name:</label></td><td ><label>Modification:</label> </td><td ><label>Suppression:</label> </td></tr>'
+					    while(i<idCDN.length) {
+ 						create +='<tr > <td ><label>'+nameCDN[i]+'</label></td><td ><a href="#" class="link"><label>Modify</label></a></label> </td><td ><label> <a  href="#" onclick="cdn.deleteCDN('+idCDN[i]+');" class="link"><label>Delete</label> </a> </label> </td></tr>'
+					   	i = i + 1	
+					    }
+
+				            create +='</table>'
+ 					    $("#cdn_zone").empty();	
+                                            $("#cdn_zone").append(create);	
+					    //alert(response.idcdn);
+					
+				       }	
+ 				     
+ 	                           }
+						
+});//end ajax 					
+
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.authVerification = function() 
+{
+	var login = sessionStorage.login; 
+	var passwd = sessionStorage.passwd;
+
+	if (!login) window.location='../login.htm';
+	 $.ajax({
+		url: "../py/form.py/authUser",
+		data: {user:login, password:passwd},
+		type: 'POST',
+		dataType: "json",
+		cache: false,
+		success: function(response){
+					     if(response.success == false) {window.location='../login.htm';}
+						 				     
+	 	                           }
+						
+	});//end ajax 					
+
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+this.submitNewCDN=function() {
+
+var region = [];
+var nbSubscriber = [];
+var nbVideo = [];
+
+
+$('#tab-region tbody').find('tr').each(function (i, el) {
+	if(i>=0) {
+		region.push($(el).children('#region').text());
+		nbSubscriber.push($(el).children('td').children('#nbsub').val());
+		nbVideo.push($(el).children('td').children('#nbvid').val());
+		}
+	});
+
+
+	 $.ajax({
+		url: "../py/form.py/computeVMs",
+		data: {rgions:region, nbSubscribers:nbSubscriber, nbVideos:nbVideo},
+		type: 'POST',
+		dataType: "json",
+		cache: false,
+		success: function(response){
+					     if(response.success == false) {window.location='../login.htm';}
+					     myFlavors = {};
+					     myTypes = {};
+					     myRegions = {};	
+					     var x = 0;	
+					     while(x < response.myFlavors.length) { 
+						nameMachine = $("#cdnname").val()+'-VM'+(x+1);
+						myFlavors[nameMachine] = response.myFlavors[x];
+						myTypes[nameMachine] = response.myTypes[x];
+						myRegions[nameMachine] = response.myRegions[x];
+				                x = x + 1;
+						}
+					     //myFlavors = JSON.stringify(myFlavors);	
+					     //for(x in myFlavors) { alert(myFlavors[x]); }
+					     sessionStorage.setItem('myFlavors', JSON.stringify(myFlavors));
+					     sessionStorage.setItem('myTypes', JSON.stringify(myTypes));
+					     sessionStorage.setItem('myRegions', JSON.stringify(myRegions));
+					     var listvalues = {"nbSubscribers": nbSubscriber, "nbVideos": nbVideo, "datepickerfrom": $("#from").val(), "datepickerto": $("#to").val(), "qoe": $("#qoe").val(), "cdnname": $("#cdnname").val(), forever: $('#forever input:checked').is(':checked'), nameRegions: nameRegions, idRegions: idRegions, resp: response}
+					     sessionStorage.setItem('lists', JSON.stringify(listvalues));	
+					     window.location='cdndetail.htm'; 	
+					      					
+					   } 
+
+	});//end ajax 					
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+this.pusheregion=function() {//start function  pushe-region
+ 
+ 
+var myregion="";
+
+
+myregion+= '<tr > <td ><label>Regions:</label></td><td ><label>Number of subscriber:</label> </td><td ><label> Number of video:</label> </td><td> <label>Suppression</label></td></tr>';
+$("#regions :selected").map(function(i, el) {
+   
+	
+	 myregion+="<tr><td id='region'>"+ $(el).val()+" </td><td>  <input type='text' id='nbsub' class='form-control' placeholder='Number of subscriber' > </td><td><input type='text' id='nbvid' class='form-control' placeholder='Number of video' > </td><td>   <label> <a href='#' onclick='cdn.deleterow(this);'> Delete</a>   </label></td></tr>";
+	
+	
+});
+
+
+$("#tab-region").empty();
+$("#tab-region").append(myregion);
+
+	
+  }//end function pushe-region
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+this.question_retrieve=function()
+{
+login = $('#userforget').val();
+
+var create='';
+$.ajax({
+        url: "/py/form.py/forgetpassword",
+	data: {user:$('#userforget').val()},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+
+				     if(response.success == false) {create += '<label>Username does not Exist</label>'}
+				     else {	
+					    
+					    showquestion = response.success;
+					    create +="<label>Secret Question = </label><label><font color='red'>"+ showquestion+"</font></label><br><br><label> Enter Your Secret Answer</label><input type='text' id='answerforget' placeholder='Secret Answer'></input>"
+					    create +="<button type='button' onclick='cdn.answer_verify();'>Show Password</button><br>"
+
+  
+					//$("#checks").empty();
+					//$("#checks").append("Show Password");
+
+					 
+
+
+
+					  }
+$("#checking").append(create);	 
+ 	                           }						
+});//end ajax 	 
+
+//$("button").empty();
+//$("#checking").append(create);
+
+  }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+this.answer_verify=function()
+{
+login = $('#userforget').val();
+password = $('#answerforget').val();
+var create='';
+
+$.ajax({
+        url: "/py/form.py/verify_answer",
+	data: {user:$('#userforget').val(), password:$('#answerforget').val()},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+
+				     if(response.success == false) {create += '<label>Wrong Answer</label><br>'}
+				     else {	
+					    
+					    showanswer = response.success;
+					    create +="<br><label>Secret Answer = </label><label><font color='red'>"+ showanswer+"</font>"
+					    
+  
+					//$("#checks").empty();
+					//$("#checks").append("Show Password");
+
+					 
+
+
+
+					  }
+$("#checking").append(create);	 
+ 	                           }						
+});//end ajax 	 
+
+//$("button").empty();
+//$("#checking").append(create);
+
+  }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.clear_database=function()
+{
+
+$.ajax({
+        url: "/py/form.py/clear_database",
+	data: {},
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+
+				     if(response.success == false) {}
+				     else {	
+					  }
+ 
+ 	                           }						
+});//end ajax 	 
+
+
+  }
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.deleterowFromdetail = function(row, nameMachine)
+	{
+	  $(row).parent().parent().parent().remove();
+	 // alert(Object.keys(myFlavors));
+  	 delete myFlavors[nameMachine]; 
+	 delete myTypes[nameMachine];
+	 delete myRegions[nameMachine];
+	// alert(Object.keys(myFlavors));
+	}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+this.deleterow = function(row,region)
+   {
+	alert(region)
+	var l=0;
+	var element;
+	while (l<selected_list.length)
+	{
+		l=l+1;
+		if (selected_list==region){}
+		
+	}
+  
+	$(row).parent().parent().parent().remove();
+
+    
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.createCDN=function()  {//start function  createCDN
+//window.location='newcdn.htm?user='+login+'&password='+passwd;
+window.location='newcdn.htm';
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+this.loadCDNdetail=function() {
+
+var listvalues = sessionStorage.getItem('myFlavors');		 	
+myFlavors = JSON.parse(listvalues);
+listvalues = sessionStorage.getItem('myTypes');	 	
+myTypes = JSON.parse(listvalues);
+listvalues =  sessionStorage.getItem('myRegions');		 	
+myRegions = JSON.parse(listvalues);
+var x = 0;
+
+//for (x in myFlavors) { alert(x+"______"+myFlavors[x]+"________"+Object.keys(myFlavors).length);  }
+
+var listvalues = sessionStorage.getItem('lists');
+var finalvalue = JSON.parse(listvalues);
+
+$("#txt_nbre").val(Object.keys(myFlavors).length);
+$("#NetworkName").val(finalvalue["resp"].mynetwork);
+
+var create="";
+var x;
+create+='<table with="100%" class="table table-striped" id="tableCDNDetail">';
+create+='<tr>';
+create+='<td style="font-style:norma ; font-size:14px; text-align:left">VMW name: </td>';
+create+='<td style="font-style:norma ; font-size:14px; text-align:left"> Type: </td>';
+create+='<td style="font-style:norma ; font-size:14px; text-align:left"> Flavor:</td>';
+create+='<td style="font-style:norma ; font-size:14px; text-align:left"> Region:</td>';
+create+='<td style="font-style:norma ; font-size:14px; text-align:left"> Operation:</td>';
+create+='</tr>';
+
+for (x in myFlavors) {
+   create+='<tr>';
+ 	 create+='<td> <input type="text" name="textfield" id="vm'+x+'" class="form-control" value="'+x+'"/> </td>';
+  	 create+='<td><select style="width:155px;" name ="mytype" class="form-control" id="mytype'+x+'" ></select> </td>';
+  	 create+='<td><select style="width:155px;" name ="myflavor" class="form-control"  id="myflavor'+x+'" ></select> </td>';
+  	 create+='<td><select style="width:155px;" name ="myregion" class="form-control"  id="myregion'+x+'" ></select> </td>';
+	 create+="<td> <label> <a href='#' onclick='cdn.deleterowFromdetail(this, &apos;"+x+"&apos;);'> Delete</a>   </label></td>";
+  	 create+='</tr>';
+}
+
+create+='</table>';
+create+='<div class="form-group col-sm-9" ></div><div class="form-group col-sm-1" ><button class="btn btn-lg btn-primary btn-block" type="button" onclick="cdn.addRow();" id="btn1">Add</button></div><div class="form-group col-sm-1" >  <button class="btn btn-lg btn-primary btn-block" type="button" onclick="cdn.sendDetailCDN();" id="btn1">Deploy</button></div>';
+	
+$("#zone").empty();	
+$("#zone").append(create);
+
+//alert(finalvalue["resp"].mytypes.length);
+for (x in myTypes) { 
+	var y = 0;
+	var create = '';
+	//alert(finalvalue["resp"].types);
+	while(y < finalvalue["resp"].types.length) {
+		if (myTypes[x] == finalvalue["resp"].types[y]) {
+		 	create+='<option  value="'+finalvalue["resp"].types[y]+'" selected >' + finalvalue["resp"].types[y]+'</option>';
+		} else {
+		 	create+='<option  value="'+finalvalue["resp"].types[y]+'" >' + finalvalue["resp"].types[y]+'</option>';
+		}
+	y = y + 1;
+	}
+
+	$("#mytype"+x).append(create);
+}
+
+for (x in  myFlavors) { 
+	var y = 0;
+	var create = '';
+	//alert(finalvalue["resp"].types);
+	while(y < finalvalue["resp"].flavors.length) {
+		if (myFlavors[x] == finalvalue["resp"].flavors[y]) {
+		 	create+='<option  value="'+finalvalue["resp"].flavors[y]+'" selected >' + finalvalue["resp"].flavors[y]+'</option>';
+		} else {
+		 	create+='<option  value="'+finalvalue["resp"].flavors[y]+'" >' + finalvalue["resp"].flavors[y]+'</option>';
+		}
+	y = y + 1;
+	}
+
+	$("#myflavor"+x).append(create);
+
+}
+
+
+for (x in  myRegions) {
+	var y = 0;
+	var create = '';
+	//alert(finalvalue["resp"].types);
+	while(y < finalvalue["nameRegions"].length) {
+		if (myRegions[x] == finalvalue["nameRegions"][y]) {
+		 	create+='<option  value="'+finalvalue["nameRegions"][y]+'" selected >' + finalvalue["nameRegions"][y]+'</option>';
+		} else {
+		 	create+='<option  value="'+finalvalue["nameRegions"][y]+'" >' + finalvalue["nameRegions"][y]+'</option>';
+		}
+	y = y + 1;
+	}
+
+	$("#myregion"+x).append(create);
+
+}
+
+
+}
+
+
+this.sendDetailCDN = function(){
+var sendTypes = {}; 
+var sendFlavors = {};
+var sendRegions = {};
+var Vm = [];
+var Type = [];
+var Flavor = [];
+var Region = [];
+
+for(x in myFlavors) {
+sendTypes[$('#vm'+x).val()] = $('#mytype'+x+' option:selected').val();
+sendFlavors[$('#vm'+x).val()] = $('#myflavor'+x+' option:selected').val();
+sendRegions[$('#vm'+x).val()] = $('#myregion'+x+' option:selected').val();
+
+//##############
+x = $('#vm'+x).val()
+Vm.push(x);
+Type.push(sendTypes[x]);
+Flavor.push(sendFlavors[x]);
+Region.push(sendRegions[x]);
+}
+
+
+$.ajax({
+	url: "../py/form.py/account",
+	data: {vms:Vm, types:Type, flavors:Flavor, regions:Region},
+	type: 'POST',
+	dataType: "json",
+	cache: false,
+	success: function(response){	
+					var listvalues = sessionStorage.getItem('lists');
+					var finalvalue = JSON.parse(listvalues);
+					var datepickerfrom = finalvalue["datepickerfrom"];
+					var datepickerto = finalvalue["datepickerto"];
+					var qoe = finalvalue["qoe"];
+					var cdnname = finalvalue["cdnname"];
+					var forever = finalvalue["forever"];
+					var nameRegions = finalvalue["nameRegions"];
+					var idRegions = finalvalue["idRegions"];
+					var nbSubscribers = finalvalue["nbSubscribers"];
+					var nbVideos = finalvalue["nbVideos"];
+					//alert(Object.keys(sendFlavors));
+					//for(x in sendFlavors) alert(x+"____"+sendFlavors[x]);
+					sessionStorage.setItem('myFlavors', JSON.stringify(sendFlavors));
+					sessionStorage.setItem('myTypes', JSON.stringify(sendTypes));
+					sessionStorage.setItem('myRegions', JSON.stringify(sendRegions));
+					var response1 = {"myTypes" : sendTypes, "myFlavors": sendFlavors, "myRegions": sendRegions, "mynetwork": finalvalue["resp"].mynetwork, "flavors": finalvalue["resp"].flavors, "types": finalvalue["resp"].types}
+					var listvalues = {"nbSubscribers": nbSubscribers, "nbVideos": nbVideos, "datepickerfrom": datepickerfrom, "datepickerto": datepickerto, "qoe": qoe, "cdnname": cdnname, "forever": forever, "nameRegions": nameRegions, "idRegions": idRegions, resp: response1, "account": response.account}
+					sessionStorage.setItem('lists', JSON.stringify(listvalues));	
+					window.location='payment.htm'; 
+				   } 
+
+	});//end ajax 					
+
+
+
+
+
+
+
+//alert("111111  "+response.myVMs);
+//alert(response.indexOf("myVMs"));
+
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+this.addRow = function(cdnName){
+var x = 0;
+
+var listvalues = sessionStorage.getItem('lists');
+var finalvalue = JSON.parse(listvalues);
+
+
+
+//alert(Object.keys(myFlavors));
+
+//nameMachine = finalvalue["cdnname"]+'-VM'+x;
+
+//if (!(nameMachine in myFlavors)) alert("OK");
+
+x = 1;
+while(true) {
+	nameMachine = finalvalue["cdnname"]+'-VM'+x;
+	if (!(nameMachine in myFlavors)) {
+		var create =  '<tr>'; 
+		create+='<td> <input type="text" name="textfield" id="vm'+nameMachine+'" class="form-control" value="'+nameMachine+'"/> </td>';
+		create+='<td><select style="width:155px;" name ="mytype"  id="mytype'+nameMachine+'" class="form-control" ></select> </td>';
+		create+='<td><select style="width:155px;" name ="myflavor"  id="myflavor'+nameMachine+'" class="form-control" ></select> </td>';
+		create+='<td><select style="width:155px;" name ="myregion"  id="myregion'+nameMachine+'" class="form-control"></select> </td>';
+		create+="<td> <label> <a href='#' onclick='cdn.deleterowFromdetail(this,"+(nameMachine)+");'> Delete</a>   </label></td>";
+		create+='</tr>';
+		$("#tableCDNDetail tr:last").after(create);
+		// Add the type from here
+		var y = 0;
+		var create = '';	
+		while(y < finalvalue["resp"].types.length) {
+		 	create+='<option  value="'+finalvalue["resp"].types[y]+'" >' + finalvalue["resp"].types[y]+'</option>';	
+			y = y + 1;
+			}
+
+		$("#mytype"+nameMachine).append(create);
+
+		//Add the flavors from here
+		y = 0;
+		create = '';
+		while(y < finalvalue["resp"].flavors.length) {
+			 	create+='<option  value="'+finalvalue["resp"].flavors[y]+'" >' + finalvalue["resp"].flavors[y]+'</option>';
+				y = y + 1;
+		}		
+
+		$("#myflavor"+nameMachine).append(create);
+
+
+		//Add region from here
+
+		var y = 0;
+		create = '';
+
+		while(y < finalvalue["nameRegions"].length) {
+			 	create+='<option  value="'+finalvalue["nameRegions"][y]+'" >' + finalvalue["nameRegions"][y]+'</option>';
+
+			y = y + 1;
+		}
+
+		$("#myregion"+nameMachine).append(create);
+
+		myFlavors[nameMachine] = $('#myflavor'+nameMachine+' option:selected').val()
+		myTypes[nameMachine] = $('#mytype'+nameMachine+' option:selected').val()
+		myRegions[nameMachine] = $('#myregion'+nameMachine+' option:selected').val()
+	
+		break;
+	}
+
+	x += 1;
+}
+}
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+this.loadPayments = function() {
+var listvalues = sessionStorage.getItem('lists');
+var finalvalue = JSON.parse(listvalues);
+//alert(finalvalue["account"]);
+$("#amoumt").empty();
+$("#amoumt").text(finalvalue["account"]);
+$("#vmnumber").empty();
+$("#vmnumber").text(finalvalue["resp"].myFlavors.length);
+$("#region").empty();
+$("#region").text(finalvalue["resp"].myRegions[0]);
+}
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+this.addingmarkers = function(map)
+{
+
+$.ajax({
+        url: "../py/form.py/getRegions",
+	type: 'POST',
+        dataType: "json",
+        cache: false,
+        success: function(response){
+				     if(response.success == false) {window.location='../login.htm';}
+				     else {
+					   markings = response.cdnlocations;
+					   longitudes = response.longitude;
+					   latitudes = response.latitude;
+					    var i = 0;
+  					    var create='';
+					    myregion+= '<thead><tr > <td ><label>Regions:</label></td><td ><label>Number of subscriber:</label> </td><td ><label> Number of video:</label> </td><td> <label>Suppression</label></td></tr></thead>';
+				            $("#tab-region").append(myregion);
+					    while(i<markings.length) {
+								       marker = new google.maps.Marker({ //putting Markers
+									  map: map,
+									  draggable: false,
+									  title: markings[i],
+									  //animation:google.maps.Animation.BOUNCE,
+									  position: {lat: parseFloat(longitudes[i]), lng: parseFloat(latitudes[i])}
+
+									});
+									cdn.markchecker(marker, markings[i]);
+
+					  				  i += 1;
+
+								       }
+					
+				       }	
+ 				     
+ 	                           }
+						
+});//end ajax 					
+
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+this.markchecker = function(marker, location_id)
+ {
+  var infowindow = new google.maps.InfoWindow({
+    content: location_id
+  });
+
+  marker.addListener('click', function() {
+    cdn.zooming(location_id)
+  });
+
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+this.zooming = function(region) {
+	var j = 0;
+	var k = 0;
+
+
+	
+
+	while (j<selected_list.length)
+		{
+		if (selected_list[j]==region){
+			region='char jao';
+			k=1;
+			}
+		j=j+1;
+		}
+		
+	if (k==0){
+		selected_list.push(region);
+		myregion='';
+		myregion+="<tbody><tr><td id='region'>"+ region +" </td><td>  <input type='text' id='nbsub' class='form-control' placeholder='Number of subscriber' > </td><td><input type='text' id='nbvid' class='form-control' placeholder='Number of video' > </td><td>   <label> <a href='#' onclick='cdn.deleterow(this,&apos;"+region+"&apos;);'> Delete</a>   </label></td></tr><tbody>";
+		$("#tab-region").append(myregion);
+		k = 0;
+
+	}
+
+
+}
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+this.sendPayment = function() {
+
+var listvalues = sessionStorage.getItem('lists');
+var finalvalue = JSON.parse(listvalues);
+
+//var listvalues = sessionStorage.getItem('auth');
+//var auth = JSON.parse(listvalues);
+//alert(auth["login"]);
+
+if ($("input:radio:checked").val()=="Callback") {
+ var listvalues = sessionStorage.getItem('myFlavors');		 	
+ myFlavors = JSON.parse(listvalues);
+// for(x in myFlavors) { alert(x); }
+ window.location='cdndetail.htm'; 	
+} else {
+
+if ($("input:radio:checked").val()=="Agree") {
+
+// We have to create a CDN from here.....
+var datepickerfrom = finalvalue["datepickerfrom"];
+var datepickerto = finalvalue["datepickerto"];
+var forever = finalvalue["forever"];
+var qoe = finalvalue["qoe"];
+var cdnname = finalvalue["cdnname"];
+var nbSubscribers = finalvalue["nbSubscribers"];
+var nbVideos = finalvalue["nbVideos"];
+var login = sessionStorage.login; 
+var password = sessionStorage.passwd;
+var listvalues = sessionStorage.getItem('myFlavors');		 	
+myFlavors = JSON.parse(listvalues);
+listvalues = sessionStorage.getItem('myTypes');	 	
+myTypes = JSON.parse(listvalues);
+listvalues =  sessionStorage.getItem('myRegions');		 	
+myRegions = JSON.parse(listvalues);
+var flavors = [];
+var types = [];
+var regions = [];
+var vnfs = [];
+for(x in myFlavors) {flavors.push(myFlavors[x]); vnfs.push(x);}
+for(x in myTypes) {types.push(myTypes[x]);}
+for(x in myRegions) {regions.push(myRegions[x]);}
+$.ajax({
+	url: "../py/form.py/createCDN",
+	data: {dateStart:JSON.stringify(datepickerfrom), dateEnd:JSON.stringify(datepickerto), validatetime:JSON.stringify(forever), qoe:JSON.stringify(qoe), cdnname:JSON.stringify(cdnname), nbSubscribers:JSON.stringify(nbSubscribers), nbVideos:JSON.stringify(nbVideos), login:JSON.stringify(login), flavors:JSON.stringify(flavors), types:JSON.stringify(types), regions:JSON.stringify(regions), vnfs:JSON.stringify(vnfs)},
+	type: 'POST',
+	dataType: "json",
+	cache: false,
+	success: function(response){	
+					if (response.success == true) alert("The CDN is successfully created");
+				   } 
+
+	});//end ajax 	
+
+}
+}
+
+}
+
+}//end classe
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+initMap=function() 
+{
+
+ 
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: {lat: 59.325, lng: 18.070}
+        });
+	
+	cdn.addingmarkers(map)
+
+       }
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+

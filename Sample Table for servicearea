@@ -1,0 +1,15 @@
++---------------+--------------+------+-----+---------+----------------+
+| Field         | Type         | Null | Key | Default | Extra          |
++---------------+--------------+------+-----+---------+----------------+
+| idservice     | int(11)      | NO   | PRI | NULL    | auto_increment |
+| regionservice | varchar(200) | NO   |     | NULL    |                |
+| auth_url      | varchar(200) | NO   |     | NULL    |                |
+| auth_username | varchar(200) | NO   |     | NULL    |                |
+| auth_password | varchar(200) | NO   |     | NULL    |                |
+| project_name  | varchar(200) | NO   |     | NULL    |                |
+| region_name   | varchar(200) | NO   |     | NULL    |                |
+| cdnlocation   | varchar(20)  | NO   |     | NULL    |                |
+| longitude     | varchar(20)  | NO   |     | NULL    |                |
+| latitude      | varchar(20)  | NO   |     | NULL    |                |
++---------------+--------------+------+-----+---------+----------------+
+

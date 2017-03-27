@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+
+    <title> CDN as Service</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="../bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../bootstrap/docs/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="../bootstrap/docs/examples/signin/signin.css" rel="stylesheet">
+
+    <!-- Bootstrap selfmade for different views -->
+    <link href="../css/forgetpassword.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../bootstrap/docs/assets/js/ie-emulation-modes-warning.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="../js/loading.js"></script>
+    <script src="../js/jquery-1.js"></script>
+    <script src="../js/validator.js"></script>
+    <script type= "text/javascript" src = "../js/countries.js"></script>
+
+
+   <script>
+
+    cdn = new cdn();
+
+   </script>
+
+  </head>
+
+  <body>
+  <hr>
+
+<div align="center"> <h2 class="form-signin-heading"> Welcome to CDN as a service application</h2></div>	
+
+<ul>
+  <li><a class="active" href="../login.htm">Home</a></li>
+  <li><a href="project.htm">Project</a></li>
+  <li><a href="team.htm">Team</a></li>
+  <li style="float:right"><a href="about.htm">About</a></li>
+  <li style="float:right"><a href="" onclick='cdn.logout_admin()'>Logout</a></li>
+</ul>
+
+    <div class="container">
+   <br>
+   <br>
+  
+ <legend>Currently Present Clouds</legend>
+
+<div class="form-group col-sm-13" cdn.location_table_creation();> 
+
+
+   <table  class="table table-striped"  id="tab-region">
+    
+  </table>
+
+</div>
+
+
+   <br>
+      <form data-toggle="validator" role="form">
+
+	  <fieldset>
+                <legend>Add New Location:</legend>
+        <div class="form-group col-sm-5">
+
+
+ <div class="form-group">
+    <label class="control-label">Cloud Name : </label>
+    <input type="text" class="form-control" id="cloudname" placeholder="Cloud Name" required autofocus>
+</div>
+
+
+ <div class="form-group">
+    <label class="control-label">Cloud Location : </label>
+    <input type="text" class="form-control" id="cloudlocation" placeholder="Cloud Location" required autofocus>
+</div>
+
+
+ <div class="form-group">
+    <label  class="control-label">Longitude :</label>
+    <input type="text" id="longitude" class="form-control" placeholder="Longitude" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Latitude :</label>
+         <input type="text" class="form-control" id="latitude" placeholder="Latitude" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">URL :</label>
+         <input type="text" class="form-control" id="url" placeholder="URL" required autofocus>
+</div>
+<br>
+
+ <div class="form-group">
+  <label class="control-label">Cloud Provider :</label>
+  <select name="cloudprovider" id="cloudprovider">
+    <option value="OpenStack">OpenStack</option>
+    <option value="Azure">Azure</option>
+    <option value="AWS">AWS</option>
+    <option value="RackSpace">RackSpace</option>
+  </select>
+</div>
+
+<br>
+
+
+ <div class="form-group">
+	 <label class="control-label">Provider Username :</label>
+         <input type="text" class="form-control" id="providerusername" placeholder="Username" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Provider Password :</label>
+         <input type="text" class="form-control" id="providerpassword" placeholder="Password" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Available Memory in GigaBytes:</label>
+         <input type="text" class="form-control" id="availablememory" placeholder="Available Memory" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Available CPU (Number of Cores) :</label>
+         <input type="text" class="form-control" id="availablecpu" placeholder="Available Cores" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Available Storage in GigaBytes :</label>
+         <input type="text" class="form-control" id="availablestorage" placeholder="Available Storage" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Available Network :</label>
+         <input type="text" class="form-control" id="availablenetwork" placeholder="Available Network" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Total Memory in GigaBytes :</label>
+         <input type="text" class="form-control" id="totalmemory" placeholder="Total Memory" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Total CPU (Number of Cores) :</label>
+         <input type="text" class="form-control" id="totalcpu" placeholder="Number of Cores" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Total Storage in GigaBytes:</label>
+         <input type="text" class="form-control" id="totalstorage" placeholder="Total Storage" required autofocus>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">Total Network :</label>
+         <input type="text" class="form-control" id="totalnetwork" placeholder="Total Network" required autofocus>
+</div>
+<br>
+
+ <div class="form-group">
+	 <label class="control-label">Country :</label>
+         
+	 <select id="country" name ="country"></select>
+<script language="javascript">
+populateCountries("country");
+ </script>
+</div>
+
+
+ <div class="form-group">
+	 <label class="control-label">City :</label>
+         <input type="text" class="form-control" id="city" placeholder="City" required autofocus>
+</div>
+
+
+<br>
+
+ <div class="form-group">
+  <label class="control-label">Continent :</label>
+  <select name="continent" id="continent">
+    <option value="Europe">Europe</option>
+    <option value="Asia">Asia</option>
+    <option value="Africa">Africa</option>
+    <option value="America">America</option>
+    <option value="Australia">Australia</option>
+    <option value="Antarctica">Antarctica</option>
+  </select>
+</div>
+
+<br>
+
+
+
+
+
+    <br>
+
+
+	   <div class="form-group " >
+     <button class="btn btn-lg btn-primary btn-block " data-disable type="button" onclick="cdn.add_cloud_checkvalue();">Add</button>
+
+      </form>
+  </div>
+
+</div>
+    </div> <!-- /container -->
+  <fieldset>
+  </div>
+   
+  </body>
+</html>
